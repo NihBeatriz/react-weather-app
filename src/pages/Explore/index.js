@@ -21,13 +21,9 @@ export default function Explore() {
         return [];
     });
 
-
     if(!token) {        
         history.push('/');
-        
     }
-
-    
     
     useEffect(() => {
         localStorage.setItem(
@@ -36,17 +32,20 @@ export default function Explore() {
         );
       }, [repositories]);
 
-
     async function handleSubmit(e) {
+        document.getElementById('errorCityNull').style.display = 'none';
+        document.getElementById('errorCitySize').style.display = 'none';
+        document.getElementById('error').style.display = 'none';
+
         e.preventDefault();
 
         if (!cityName) {
-            alert('Digite o nome de uma cidade');
+            document.getElementById('errorCityNull').style.display = 'block';
             return;
         }
 
         if (cityName.length <= 3) {
-            alert('O nome da cidade deve ter mais de três letras');
+            document.getElementById('errorCitySize').style.display = 'block';
             return;
         }
 
@@ -57,9 +56,9 @@ export default function Explore() {
             setCityName('');
             setisLoading('');
         } catch (err) {
-            console.log(err);
+            document.getElementById('error').style.display = 'block';
+            return;
         }
-
     }
 
     function handleLogout() {
@@ -68,7 +67,6 @@ export default function Explore() {
     }
 
     return (
-
         <div className="explore-container">
             <header>
                 <button onClick={handleLogout} type="button">
@@ -77,13 +75,17 @@ export default function Explore() {
             </header>
 
             <h1>Veja o tempo agora ao redor do mundo</h1>
+
             <form onSubmit={handleSubmit}>
                 <input value={cityName} onChange={e => setCityName(e.target.value)} placeholder="Nome da cidade"></input>
-                <button type="submit">Pesquisar</button>
-                           
+                <button type="submit">Pesquisar</button>       
             </form>
-            <div className="load"> {isLoading} </div>
+            
+            <span id="errorCityNull" style={{ color: '#f00', display: 'none'}}>Digite o nome de uma cidade!</span>
+            <span id="errorCitySize" style={{ color: '#f00', display: 'none'}}>O nome da cidade deve ter mais de três letras!</span>
+            <span id="error" style={{ color: '#f00', display: 'none'}}>Cidade não encontrada!</span>
 
+            <div className="load"> {isLoading} </div>
 
             <ul className="result" id="result">
                 {repositories.map((repository) => (
@@ -95,14 +97,7 @@ export default function Explore() {
                         </div>
                     </li>
                 ))}
-
-
-
-
             </ul>
-
-
-
         </div>
     )
 }

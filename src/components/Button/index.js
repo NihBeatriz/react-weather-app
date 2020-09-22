@@ -8,5 +8,4 @@ export default function Button({ children, ...rest }) {
         {children}
     </button>
     )
-
 }

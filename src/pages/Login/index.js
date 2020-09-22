@@ -18,13 +18,13 @@ export default function Login() {
 
     if(token) {
         history.push('/explore');       
-        
-        
     }
 
     async function handleLogin(e) {
-        e.preventDefault(); 
+        document.getElementById('error').style.display = 'none';
+         
         const data = {email, password};
+        e.preventDefault();
 
         try{
             const response = await apiReq.post('/login', data);
@@ -33,7 +33,8 @@ export default function Login() {
             localStorage.setItem('token', token);
             history.push('/explore');
         } catch(err) {
-            alert("Entre com login válido", err);
+            document.getElementById('error').style.display = 'block';
+            return;
         }
     }
 
@@ -44,13 +45,13 @@ export default function Login() {
                 <h1>Faça seu login</h1>
                 <Input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="Digite seu e-mail" />
                 <Input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="Digite sua senha" />
+                <span id="error" style={{ color: '#f00', display: 'none'}}>Login Inválido!</span>
                 <Button type="submit">Acessar</Button>
                 <Link className="icon-link" to="/signup">
                     <FiLogIn size={18} color="red"/>
                     Criar cadastro
                 </Link>
             </form>
-            
         </div>
     )
 }

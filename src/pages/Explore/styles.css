@@ -9,7 +9,6 @@
     align-items: center;
 }
 
-
 .explore-container header button{
     margin-left: auto;
     width: 40px;
@@ -18,8 +17,8 @@
     background: transparent;
     border: 1px solid #dcdce6;
     transition: border-color 0.2s;;
-
 }
+
 .explore-container header button:hover{
     border-color: #999;
 }
@@ -38,8 +37,7 @@
     border: 0;
     border-radius: 5px 0 0 5px;
     border-color: #fff;
-    margin-bottom: 6px;
-    
+    margin-bottom: 6px; 
 }
 
 .explore-container form button {
@@ -77,7 +75,8 @@
     border-radius: 8px;
     display: flex;
     transition: transform 0.2s;
-}        
+}     
+
 .explore-container li:hover{
     transform: translateX(5px);
 }
@@ -85,7 +84,6 @@
 .explore-container li + li{
     margin-top: 20px;
 }
-
 
 .explore-container img{
     max-width: 80px;

@@ -4,9 +4,6 @@ import './styles.css';
 
 export default function Input({...rest}) { 
     return(
-        
-            <input {...rest}></input>
-        
+        <input {...rest}></input>
     )
-    
 }

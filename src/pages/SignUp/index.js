@@ -16,31 +16,30 @@ export default function SignUp() {
     const history = useHistory();
     const token = localStorage.getItem('token');
 
-
-
     if(token) {        
         history.push('/explore');
-        
     }
 
-
     async function handleSignUp(e){
-        e.preventDefault();     
+        document.getElementById('errorPass').style.display = 'none';
+        document.getElementById('error').style.display = 'none';
+
+        e.preventDefault();  
+
         try{
             if(password !== confPassword) {
-                alert("A senha não confere");
+                document.getElementById('errorPass').style.display = 'block';
                 setPassword('');
                 setConfPassword('');
                 return;
             }        
-    
             const data = {email, password};
             console.log(data);
             const response = await apiReq.post('/register', data);
             console.log(response.data);
             history.push('/');
         } catch(err) {
-            alert("Erro ao cadastrar, tente novamente");
+            document.getElementById('error').style.display = 'block';
             setEmail('');
             setPassword('');
             setConfPassword('');
@@ -62,10 +61,11 @@ export default function SignUp() {
                     <Input value={email} onChange={e =>setEmail(e.target.value)} type="email"placeholder="Digite seu e-mail"/>
                     <Input value={password} onChange={e =>setPassword(e.target.value)} type="password" placeholder="Digite a senha" />
                     <Input value={confPassword} onChange={e =>setConfPassword(e.target.value)} type="password" placeholder="Confirme a senha" />
+                    <span id="errorPass" style={{ color: '#f00', display: 'none'}}>As senhas não conferem!</span>
+                    <span id="error" style={{ color: '#f00', display: 'none'}}>Erro ao cadastrar!</span>
                     <Button type="submit">Cadastrar</Button>
                 </form>
             </div>
         </div>
-
     )
 }

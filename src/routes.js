@@ -12,7 +12,6 @@ export default function Routes() {
            <Route path="/" exact component={Login} />
            <Route path="/signup" component={SignUp} />     
            <Route path="/explore" component={Explore} />       
-            
         </Switch>
         </BrowserRouter>
     );
