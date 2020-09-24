@@ -1,57 +1,65 @@
-import React, {useState} from 'react';
-import {Link, useHistory} from 'react-router-dom';
-import {FiLogIn} from 'react-icons/fi';
+import React from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { FiLogIn } from 'react-icons/fi';
 
 import './styles.css';
 import logoImg from '../../assets/logo.svg';
-import apiReq from '../../services/apiReq';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';
+export default class Login extends React.Component {
+    state = {
+        email: "",
+        password: "",
+    };
 
-export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const history = useHistory();
-    const token = localStorage.getItem('token');
+    login = async e => {
+        const { email, password } = this.state;
 
-
-    if(token) {
-        history.push('/explore');       
-    }
-
-    async function handleLogin(e) {
-        document.getElementById('error').style.display = 'none';
-         
-        const data = {email, password};
         e.preventDefault();
-
-        try{
-            const response = await apiReq.post('/login', data);
-            const token = response.data.token;
-            console.log(token);
-            localStorage.setItem('token', token);
-            history.push('/explore');
-        } catch(err) {
-            document.getElementById('error').style.display = 'block';
-            return;
+        console.log(email)
+        console.log(password)
+        
+        if (!email || !password) {
+            this.setState({ erro: "Preencha todos os campos!" })
+        } else {
+            try {
+                await axios.post(`https://reqres.in/api/login`, {
+                    email: email,
+                    password: password
+                }, {
+                    crossDomain: true
+                }).then(result => {
+                    if (result.request.status === 200){
+                        localStorage.setItem('token', result.data.token)
+                        this.props.history.push("/explore")
+                    }
+                })
+            } catch (err) {
+                this.setState({ erro: "Login inválido!" })
+            }
         }
     }
 
-    return (
-        <div className="login-container">
-            <img src={logoImg} alt="Weather Now" />
-            <form onSubmit={handleLogin}>
-                <h1>Faça seu login</h1>
-                <Input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="Digite seu e-mail" />
-                <Input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="Digite sua senha" />
-                <span id="error" style={{ color: '#f00', display: 'none'}}>Login Inválido!</span>
-                <Button type="submit">Acessar</Button>
-                <Link className="icon-link" to="/signup">
-                    <FiLogIn size={18} color="red"/>
-                    Criar cadastro
-                </Link>
-            </form>
-        </div>
-    )
-}
+    render() {
+        localStorage.setItem('token', "");
+
+        return (
+            <div className="login-container">
+                <img src={logoImg} alt="Weather Now" />
+                <form onSubmit={this.login}>
+                    <h1>Faça seu login</h1>
+                    <Input value={this.state.email} onChange={e => this.setState({ email: e.target.value })} type="email" placeholder="Digite seu e-mail" />
+                    <Input value={this.state.password} onChange={e => this.setState({ password: e.target.value })} type="password" placeholder="Digite sua senha" />
+                    <span value={this.state.erro} className="error">{this.state.erro}</span>
+                    <Button type="submit">Acessar</Button>
+                    <Link className="icon-link" to="/signup">
+                        <FiLogIn size={18} color="red"/>
+                        Criar cadastro
+                    </Link>
+                </form>
+            </div>
+        )
+    }
+}   

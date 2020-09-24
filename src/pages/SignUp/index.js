@@ -1,71 +1,74 @@
-import React,{useState} from 'react';
-import {FiArrowLeft} from 'react-icons/fi'
-import {Link, useHistory} from 'react-router-dom';
+import React from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi'
 
-import apiReq from '../../services/apiReq';
 import './styles.css';
 import logoImg from '../../assets/logo.svg';
 
 import Button from '../../components/Button';
 import Input from '../../components/Input';
+export default class SignUp extends React.Component {
+    state = {
+        email: "",
+        password: "",
+        passwordOk: "",
+    };
 
-export default function SignUp() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confPassword, setConfPassword] = useState('');
-    const history = useHistory();
-    const token = localStorage.getItem('token');
+    signUp = async e => {
+        const { email, password, passwordOk } = this.state;
+        
+        e.preventDefault();
+        console.log(email)
+        console.log(password)
+        console.log(passwordOk)
 
-    if(token) {        
-        history.push('/explore');
+        if (!email || !password || !passwordOk) {
+            this.setState({ erro: "Preencha todos os campos!" });
+        } else if(password !== passwordOk) {
+            this.setState({ erro: "As senhas não conferem!" });
+        } else {
+            try {
+                await axios.post(`https://reqres.in/api/register`, {
+                    email: email,
+                    password: password
+                }, {
+                    crossDomain: true
+                }).then(result => {
+                    if (result.request.status === 200){
+                        localStorage.setItem('token', result.data.token)
+                        this.props.history.push("/")
+                    }
+                })
+            } catch (err) {
+                this.setState({ erro: "Erro ao cadastrar!"});
+            }
+        } 
     }
 
-    async function handleSignUp(e){
-        document.getElementById('errorPass').style.display = 'none';
-        document.getElementById('error').style.display = 'none';
+    render() {
+        localStorage.setItem('token', "");
 
-        e.preventDefault();  
-
-        try{
-            if(password !== confPassword) {
-                document.getElementById('errorPass').style.display = 'block';
-                setPassword('');
-                setConfPassword('');
-                return;
-            }        
-            const data = {email, password};
-            console.log(data);
-            const response = await apiReq.post('/register', data);
-            console.log(response.data);
-            history.push('/');
-        } catch(err) {
-            document.getElementById('error').style.display = 'block';
-            setEmail('');
-            setPassword('');
-            setConfPassword('');
-        }
-    }
-
-    return (
-        <div className="signup-container">
-            <div className="content">
-                <section className="">
-                  <img src={logoImg} alt="Weather Now"/>
-                  <h1>Cadastro</h1>
-                  <Link className="icon-link" to="/">
-                    <FiArrowLeft size={18} color="red"/>
-                    Voltar para a página de Login 
-                </Link>
-                </section>
-                <form onSubmit={handleSignUp}>
-                    <Input value={email} onChange={e =>setEmail(e.target.value)} type="email"placeholder="Digite seu e-mail"/>
-                    <Input value={password} onChange={e =>setPassword(e.target.value)} type="password" placeholder="Digite a senha" />
-                    <Input value={confPassword} onChange={e =>setConfPassword(e.target.value)} type="password" placeholder="Confirme a senha" />
-                    <span id="errorPass" style={{ color: '#f00', display: 'none'}}>As senhas não conferem!</span>
-                    <span id="error" style={{ color: '#f00', display: 'none'}}>Erro ao cadastrar!</span>
-                    <Button type="submit">Cadastrar</Button>
-                </form>
+        return (
+            <div className="signup-container">
+                <div className="content">
+                    <section className="">
+                    <img src={logoImg} alt="Weather Now"/>
+                    <h1>Cadastro</h1>
+                    <Link className="icon-link" to="/">
+                        <FiArrowLeft size={18} color="red"/>
+                        Voltar para a página de Login 
+                    </Link>
+                    </section>
+                    <form onSubmit={this.signUp}>
+                        <Input value={this.state.email} onChange={e => this.setState({ email: e.target.value })} type="email" placeholder="Digite seu e-mail"/>
+                        <Input value={this.state.password} onChange={e => this.setState({ password: e.target.value })} type="password" placeholder="Digite a senha" />
+                        <Input value={this.state.passwordOk} onChange={e => this.setState({ passwordOk: e.target.value })} type="password" placeholder="Confirme a senha" />
+                        <span value={this.state.erro} className="error">{this.state.erro}</span>
+                        <Button type="submit">Cadastrar</Button>
+                    </form>
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
 }
